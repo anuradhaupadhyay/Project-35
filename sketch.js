@@ -13,23 +13,34 @@ function preload(){
 }
 
 function setup() {
-  createCanvas(500, 500);
+  createCanvas(700, 700);
 
   feedButton = createButton("FEED");
   feedButton.position(570,530);
-  feedButton.mousePressed(decreaseFood);
+
 
   addFood = createButton("ADD FOOD");
   addFood.position(570,50);
-  addFood.mousePressed(function (){
-  addFoodRef = db.ref("/Food");
-  foodStock = foodStock + 20;
-  addFoodRef.set(foodStock);
-  })
 
 
   //Sprites
+  feedButton.mousePressed(function (){
 
+    //if(foodStock>0){
+    foodRef = db.ref("Food");
+    foodStock = foodStock - 1;
+    foodRef.set(foodStock);
+    dog.addImage(dogImage1);
+  
+    getTime();
+    //}
+  });
+  
+  addFood.mousePressed(function (){
+    addFoodRef = db.ref("/Food");
+    foodStock = foodStock + 20;
+    addFoodRef.set(foodStock);
+    })
 
 
   dog = createSprite(400,150);
@@ -49,16 +60,25 @@ function setup() {
 
 function draw() {  
   background(46, 139, 87);
-
   
 
+  x = 30;
 
+  foodRef = db.ref("Food");
+  
    for(var i = 0; i< foodStock; i=i+1){
 
-    food = createSprite(i,400,50,50);
-    food.addImage(foodImage);
-    food.scale = 0.3;
+    x = x + 30;
 
+    if(i<10){
+      food = createSprite(x,400,50,50);
+      food.addImage(foodImage);
+      food.scale = 0.3;
+    } else {
+      food = createSprite(x,30,50,50);
+      food.addImage(foodImage);
+      food.scale = 0.3;
+    }
    }
   
   drawSprites();
@@ -78,23 +98,9 @@ function read(data){
   foodStock = data.val();
 }
 
-function decreaseFood(){
-
-  if(foodStock>0){
-  foodRef = db.ref("Food");
-  foodStock = foodStock - 1;
-  foodRef.set(foodStock);
-  dog.addImage(dogImage1);
-  //food.x = 350;
-  //food.y = 200;
-  //food.scale = 0.1;
-
-  getTime();
-  }
-}
 
 async function getTime(){
-  var response = await fetch("http://worldtimeapi.org/api/timezone/Asia/Kolkata");
+  var response = await fetch("https://worldtimeapi.org/api/timezone/Asia/Kolkata");
   var responseJSON = await response.json();
 
   var datetime = responseJSON.datetime;
